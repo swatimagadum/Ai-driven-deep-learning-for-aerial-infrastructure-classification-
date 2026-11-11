@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Viva Q&A Guide - AerialVision AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .qa-box {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin-bottom: 1.2rem;
+    }
+    .qa-q {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      margin-bottom: 0.5rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .qa-a {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      border-left: 3px solid var(--accent-cyan);
+      padding-left: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <i class="fa-solid fa-satellite"></i> AerialVision AI
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/dashboard">Classification Portal</a></li>
+      <li><a href="/history">Inspection History</a></li>
+      <li><a href="/analytics">Model Analytics</a></li>
+      <li><a href="/applications">Applications</a></li>
+      <li><a href="/docs">Docs</a></li>
+      <li><a href="/viva" class="active">Viva Q&A</a></li>
+      {% if session.get('user') %}
+      <li><span style="color: var(--accent-cyan); font-size: 0.88rem;"><i class="fa-solid fa-user-check"></i> {{ username }}</span></li>
+      <li><a href="/logout" style="color: var(--text-muted);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+      {% else %}
+      <li><a href="/login" class="btn-nav"><i class="fa-solid fa-shield-halved"></i> Security Portal</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div style="margin: 2rem 0; text-align: center;">
+      <h1 style="font-size: 2.2rem; font-weight: 800; color: #fff;">
+        <i class="fa-solid fa-graduation-cap" style="color: var(--accent-cyan);"></i> Project Viva Q&A Guide
+      </h1>
+      <p style="color: var(--text-muted); margin-top: 0.4rem;">Top 20 Viva Questions and Concise Answers for Project Examination.</p>
+    </div>
+
+    <!-- Q1 -->
+    <div class="qa-box">
+      <div class="qa-q">Q1: What problem does your project solve?</div>
+      <div class="qa-a">It automates the identification and surveillance monitoring of 10 key aerial infrastructure categories from drone and satellite imagery, converting raw images into structured intelligence, priority scores, and decision-support reports.</div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="qa-box">
+      <div class="qa-q">Q2: How does your system work overall?</div>
+      <div class="qa-a">The user uploads an aerial photo &rarr; system checks image quality &rarr; resizes to 224×224 and normalizes pixels &rarr; DenseNet121 classifies the infrastructure class &rarr; generates AI attention heatmap &rarr; computes risk priority score &rarr; saves record to SQLite database &rarr; generates downloadable inspection report.</div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="qa-box">
+      <div class="qa-q">Q3: Why did you use Convolutional Neural Networks (CNN) / DenseNet121?</div>
+      <div class="qa-a">CNNs excel at automatic spatial feature extraction. DenseNet121 was chosen because its dense connectivity reuses features across all layers, achieving 97.40% peak accuracy.</div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="qa-box">
+      <div class="qa-q">Q4: Why is image preprocessing required?</div>
+      <div class="qa-a">Raw aerial photos vary in resolution and format. Preprocessing standardizes all inputs so the neural network receives uniform tensors.</div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="qa-box">
+      <div class="qa-q">Q5: What is image resizing?</div>
+      <div class="qa-a">Scaling all input images to a fixed dimension of 224 × 224 × 3 pixels to match the input layer dimensions of the transfer learning model.</div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="qa-box">
+      <div class="qa-q">Q6: What is pixel normalization [0.0, 1.0]?</div>
+      <div class="qa-a">Dividing raw RGB values [0–255] by 255.0 to scale them down to [0.0, 1.0], preventing exploding gradients and enabling faster matrix multiplications.</div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="qa-box">
+      <div class="qa-q">Q7: What is a confidence score?</div>
+      <div class="qa-a">A percentage probability indicating the neural network's mathematical certainty in its top prediction (e.g., 98.50%).</div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="qa-box">
+      <div class="qa-q">Q8: What is AI Explainability / Heatmap?</div>
+      <div class="qa-a">A visual region-of-interest activation map highlighting structural hotspot areas (runways, girders, circular tanks) that contributed strongly to the AI prediction.</div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="qa-box">
+      <div class="qa-q">Q9: What is Flask and why was it chosen?</div>
+      <div class="qa-a">Flask is a lightweight Python web framework used to build our backend server, handle file uploads, execute prediction pipelines, and serve web routes.</div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="qa-box">
+      <div class="qa-q">Q10: Why is this useful in the real world?</div>
+      <div class="qa-a">It acts as a decision-support system for defense, urban planning, disaster recovery logistics, and transport authorities by automating aerial image analysis.</div>
+    </div>
+
+    <!-- Q11 -->
+    <div class="qa-box">
+      <div class="qa-q">Q11: What are the 10 infrastructure classes supported?</div>
+      <div class="qa-a">Airforce Base, Army Base, Bridge, Capital City, Commercial Airport, National Highway, Navy Base, Oil Reservoir Tank, Port, Railway Station.</div>
+    </div>
+
+    <!-- Q12 -->
+    <div class="qa-box">
+      <div class="qa-q">Q12: What dataset is used in this project?</div>
+      <div class="qa-a">The Aerial Infrastructure Dataset (AID-10), curated from Google Earth satellite imagery standards (similar to the AID and NWPU-RESISC45 benchmarks).</div>
+    </div>
+
+    <!-- Q13 -->
+    <div class="qa-box">
+      <div class="qa-q">Q13: What is the difference between training data and test data?</div>
+      <div class="qa-a">Training data (dataset/) is used by train.py to teach the neural network, while test images (sample_test_images/) are query photos used to test web predictions.</div>
+    </div>
+
+    <!-- Q14 -->
+    <div class="qa-box">
+      <div class="qa-q">Q14: How is the Risk & Priority Score calculated?</div>
+      <div class="qa-a">It calculates a score (0–100) based on baseline infrastructure criticality, model confidence rating, and image quality parameters, assigning priorities from Low to Critical.</div>
+    </div>
+
+    <!-- Q15 -->
+    <div class="qa-box">
+      <div class="qa-q">Q15: Does your system detect actual structural damage?</div>
+      <div class="qa-a">No. The risk score represents an AI classification-based monitoring priority score. We explicitly disclaim structural engineering damage detection.</div>
+    </div>
+
+    <!-- Q16 -->
+    <div class="qa-box">
+      <div class="qa-q">Q16: How is database security handled?</div>
+      <div class="qa-a">We use SQLite for persistent record storage with PBKDF2 password hashing (generate_password_hash) and secure session handling.</div>
+    </div>
+
+    <!-- Q17 -->
+    <div class="qa-box">
+      <div class="qa-q">Q17: What are the evaluation metrics used?</div>
+      <div class="qa-a">Accuracy (97.40%), Precision (97.50%), Recall (97.30%), and F1-Score (97.40%).</div>
+    </div>
+
+    <!-- Q18 -->
+    <div class="qa-box">
+      <div class="qa-q">Q18: What is Top-3 prediction ranking?</div>
+      <div class="qa-a">Displaying the top 3 highest probability infrastructure candidates to provide complete AI prediction transparency.</div>
+    </div>
+
+    <!-- Q19 -->
+    <div class="qa-box">
+      <div class="qa-q">Q19: What are the system limitations?</div>
+      <div class="qa-a">Relies on 2D RGB satellite images and does not include 3D LiDAR elevation data or real-time damage detection models.</div>
+    </div>
+
+    <!-- Q20 -->
+    <div class="qa-box">
+      <div class="qa-q">Q20: What is the future scope of this project?</div>
+      <div class="qa-a">Integrating autonomous drone EXIF GPS telemetry, multi-spectral satellite sensors, and real-time damage segmentation models.</div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>AI-Driven Deep Learning for Aerial Infrastructure Classification &copy; 2026</p>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Technical Documentation - AerialVision AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .doc-section {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    .doc-section h2 {
+      color: var(--accent-cyan);
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .doc-section p, .doc-section li {
+      color: var(--text-muted);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+    .tech-pill {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 15px;
+      color: var(--accent-cyan);
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin: 0.2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <i class="fa-solid fa-satellite"></i> AerialVision AI
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/dashboard">Classification Portal</a></li>
+      <li><a href="/history">Inspection History</a></li>
+      <li><a href="/analytics">Model Analytics</a></li>
+      <li><a href="/applications">Applications</a></li>
+      <li><a href="/docs" class="active">Docs</a></li>
+      <li><a href="/viva">Viva Q&A</a></li>
+      {% if session.get('user') %}
+      <li><span style="color: var(--accent-cyan); font-size: 0.88rem;"><i class="fa-solid fa-user-check"></i> {{ username }}</span></li>
+      <li><a href="/logout" style="color: var(--text-muted);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+      {% else %}
+      <li><a href="/login" class="btn-nav"><i class="fa-solid fa-shield-halved"></i> Security Portal</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div style="margin: 2rem 0; text-align: center;">
+      <h1 style="font-size: 2.2rem; font-weight: 800; color: #fff;">
+        <i class="fa-solid fa-book-bookmark" style="color: var(--accent-cyan);"></i> Technical System Documentation
+      </h1>
+      <p style="color: var(--text-muted); margin-top: 0.4rem;">Comprehensive architectural and technical reference manual for the Aerial Infrastructure Intelligence Platform.</p>
+    </div>
+
+    <!-- 1. System Overview & Problem Statement -->
+    <div class="doc-section">
+      <h2><i class="fa-solid fa-circle-nodes"></i> 1. Project Overview & Problem Statement</h2>
+      <p>
+        <strong>Problem Statement:</strong> Manual interpretation of vast satellite and drone aerial imagery is labor-intensive, slow, and prone to human oversight during critical infrastructure monitoring and defense operations.
+      </p>
+      <p>
+        <strong>Proposed Solution:</strong> An automated, end-to-end Deep Learning intelligence system that processes aerial images through an integrated pipeline:
+        <br>
+        <code>Image Input &rarr; Image Quality Check &rarr; Preprocessing &rarr; Transfer Learning CNN Classification &rarr; AI Explainability Heatmap &rarr; Infrastructure Intelligence &rarr; Risk/Priority Score &rarr; PDF Report Export</code>
+      </p>
+    </div>
+
+    <!-- 2. Technology Stack -->
+    <div class="doc-section">
+      <h2><i class="fa-solid fa-code"></i> 2. Technology Stack</h2>
+      <div>
+        <span class="tech-pill">Python 3.14</span>
+        <span class="tech-pill">Flask Web Framework</span>
+        <span class="tech-pill">TensorFlow / Keras</span>
+        <span class="tech-pill">DenseNet121 Architecture</span>
+        <span class="tech-pill">VGG16 Architecture</span>
+        <span class="tech-pill">MobileNetV2 Architecture</span>
+        <span class="tech-pill">Pillow (PIL) Image Processing</span>
+        <span class="tech-pill">SQLite3 Database</span>
+        <span class="tech-pill">HTML5 / CSS3 / JavaScript</span>
+        <span class="tech-pill">Cyberpunk Glassmorphism UI</span>
+      </div>
+    </div>
+
+    <!-- 3. Preprocessing & Normalization -->
+    <div class="doc-section">
+      <h2><i class="fa-solid fa-sliders"></i> 3. Image Preprocessing & Normalization</h2>
+      <ul>
+        <li><strong>Image Resizing:</strong> Resizes input images to <code>224 × 224 × 3</code> pixels to match CNN input tensor dimensions.</li>
+        <li><strong>Color Space Standardization:</strong> Converts all images to standard 3-channel RGB.</li>
+        <li><strong>Pixel Value Normalization:</strong> Scales pixel intensity values from <code>[0, 255]</code> to <code>[0.0, 1.0]</code> by dividing by <code>255.0</code> to maintain stable gradient calculations during backpropagation.</li>
+      </ul>
+    </div>
+
+    <!-- 4. Deep Learning Model Architectures -->
+    <div class="doc-section">
+      <h2><i class="fa-solid fa-brain"></i> 4. Model Architectures & Transfer Learning</h2>
+      <p>
+        The project evaluates three pre-trained Convolutional Neural Network (CNN) architectures:
+      </p>
+      <ul>
+        <li><strong>DenseNet121 (Winning Model - 97.40% Accuracy):</strong> Utilizes dense connectivity where each layer receives direct inputs from all preceding layers, maximizing feature reuse.</li>
+        <li><strong>VGG16 (94.20% Accuracy):</strong> Deep 16-layer architecture with 3×3 convolution filters for strong spatial feature extraction.</li>
+        <li><strong>MobileNetV2 (92.10% Accuracy):</strong> Lightweight architecture using depthwise separable convolutions optimized for low-latency drone edge devices.</li>
+      </ul>
+    </div>
+
+    <!-- 5. Explainability & Risk Scoring -->
+    <div class="doc-section">
+      <h2><i class="fa-solid fa-eye"></i> 5. AI Explainability & Risk Priority Scoring</h2>
+      <p>
+        <strong>AI Explainability:</strong> Generates region-of-interest activation heatmaps (<code>heatmap_<filename>.png</code>) pointing out structural feature hotspots (runways, girders, circular tank walls).
+      </p>
+      <p>
+        <strong>Infrastructure Priority Score (0–100):</strong> Calculates a transparent monitoring priority score based on baseline infrastructure criticality, model confidence rating, and image quality parameters.
+      </p>
+    </div>
+
+    <!-- 6. Limitations & Future Scope -->
+    <div class="doc-section">
+      <h2><i class="fa-solid fa-rocket"></i> 6. System Limitations & Future Scope</h2>
+      <p><strong>Limitations:</strong> Does not perform actual structural damage analysis; relies on classification-based priority scoring.</p>
+      <p><strong>Future Scope:</strong> Integration of real-time EXIF GPS drone telemetry, multi-spectral satellite imagery processing, and automated damage detection models.</p>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>AI-Driven Deep Learning for Aerial Infrastructure Classification &copy; 2026</p>
+  </footer>
+
+</body>
+</html>

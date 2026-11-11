@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cyber Security Portal - AerialVision AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .cyber-card {
+      background: rgba(13, 19, 35, 0.85);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      box-shadow: 0 0 35px rgba(0, 242, 254, 0.15);
+      border-radius: 20px;
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .cyber-scanner {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 1.2rem;
+      border-radius: 50%;
+      background: rgba(0, 242, 254, 0.1);
+      border: 2px solid var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      color: var(--accent-cyan);
+      position: relative;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+    }
+    .role-pills {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+    .role-pill {
+      padding: 0.35rem 0.8rem;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      border: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.03);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .role-pill.active {
+      border-color: var(--accent-cyan);
+      background: rgba(0, 242, 254, 0.15);
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/login" class="nav-brand">
+      <i class="fa-solid fa-satellite"></i> AerialVision AI
+    </a>
+    <ul class="nav-links">
+      <li><a href="/login" class="btn-nav active"><i class="fa-solid fa-shield-halved"></i> Login</a></li>
+    </ul>
+  </nav>
+
+  <div class="login-container" style="max-width: 440px; margin: 3.5rem auto;">
+    <div class="cyber-card">
+      <div class="cyber-scanner">
+        <i class="fa-solid fa-fingerprint"></i>
+      </div>
+
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <span style="font-size: 0.75rem; letter-spacing: 2px; color: var(--accent-cyan); text-transform: uppercase; font-weight: 700;">
+          <i class="fa-solid fa-lock"></i> DEFENSE AUTHENTICATION PORTAL
+        </span>
+        <h2 style="font-size: 1.8rem; font-weight: 800; margin-top: 0.3rem;">Surveillance Login</h2>
+      </div>
+
+      <!-- Role Selection Pills -->
+      <div class="role-pills">
+        <span class="role-pill" onclick="selectRole(this)"><i class="fa-solid fa-user-gear"></i> Admin</span>
+        <span class="role-pill" onclick="selectRole(this)"><i class="fa-solid fa-chart-line"></i> Analyst</span>
+        <span class="role-pill" onclick="selectRole(this)"><i class="fa-solid fa-user-shield"></i> Defense Officer</span>
+      </div>
+
+      {% if error %}
+      <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; padding: 0.8rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1.2rem; text-align: center;">
+        <i class="fa-solid fa-circle-exclamation"></i> {{ error }}
+      </div>
+      {% endif %}
+
+      <form action="/login" method="POST" autocomplete="off">
+        <div class="form-group">
+          <label for="username"><i class="fa-solid fa-id-badge" style="color: var(--accent-cyan);"></i> Security ID / Username</label>
+          <input type="text" id="username" name="username" class="form-control" placeholder="Enter security ID" autocomplete="off" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password"><i class="fa-solid fa-key" style="color: var(--accent-cyan);"></i> Access Key / Password</label>
+          <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" autocomplete="new-password" required>
+        </div>
+
+        <button type="submit" class="btn-submit" style="margin-top: 1rem; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta)); padding: 0.95rem;">
+          <i class="fa-solid fa-shield-cat"></i> Authenticate Security Access
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>AI-Driven Deep Learning for Aerial Infrastructure Classification &copy; 2026</p>
+  </footer>
+
+  <script>
+    function selectRole(el) {
+      document.querySelectorAll('.role-pill').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    // Force clear inputs on page load to prevent browser autofill
+    window.addEventListener('DOMContentLoaded', () => {
+      const un = document.getElementById('username');
+      const pw = document.getElementById('password');
+      if (un) un.value = '';
+      if (pw) pw.value = '';
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inspection History & Monitoring Analytics - AerialVision AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .kpi-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .search-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .search-input {
+      flex: 1;
+      background: rgba(13, 19, 35, 0.8);
+      border: 1px solid var(--glass-border);
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      color: #fff;
+    }
+    .prio-badge {
+      padding: 0.25rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .prio-Critical { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; }
+    .prio-High { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid #f59e0b; }
+    .prio-Medium { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid #3b82f6; }
+    .prio-Low { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981; }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <i class="fa-solid fa-satellite"></i> AerialVision AI
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/dashboard">Classification Portal</a></li>
+      <li><a href="/analytics">Model Analytics</a></li>
+      <li><a href="/history" class="active">Inspection History</a></li>
+      {% if session.get('user') %}
+      <li><a href="/logout" style="color: var(--text-muted);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+      {% else %}
+      <li><a href="/login" class="btn-nav"><i class="fa-solid fa-shield-halved"></i> Security Portal</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div style="margin: 2rem 0;">
+      <h1 style="font-size: 2.2rem; font-weight: 800; color: #fff;">
+        <i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-cyan);"></i> Inspection History & Monitoring Dashboard
+      </h1>
+      <p style="color: var(--text-muted); margin-top: 0.4rem;">
+        Persistent SQLite database audit log of all aerial infrastructure scans, risk assessments, and decision-support reports.
+      </p>
+    </div>
+
+    <!-- KPI Summary Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon bg-cyan"><i class="fa-solid fa-microscope"></i></div>
+        <div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">Total Inspections</div>
+          <div style="font-size: 1.6rem; font-weight: 800; color: var(--accent-cyan);">{{ kpis.total_inspections }}</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon bg-magenta"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">High Priority Alerts</div>
+          <div style="font-size: 1.6rem; font-weight: 800; color: var(--accent-magenta);">{{ kpis.high_priority_count }}</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon bg-emerald"><i class="fa-solid fa-circle-check"></i></div>
+        <div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">Average Confidence</div>
+          <div style="font-size: 1.6rem; font-weight: 800; color: var(--accent-emerald);">{{ kpis.avg_confidence }}%</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon bg-amber"><i class="fa-solid fa-layer-group"></i></div>
+        <div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">Most Detected Target</div>
+          <div style="font-size: 1.1rem; font-weight: 800; color: #fff;">{{ kpis.most_detected }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div class="glass-card" style="margin-bottom: 2rem;">
+      <div class="search-bar">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by Infrastructure Class, Analyst, or ID..." onkeyup="filterTable()">
+        <select id="prioFilter" class="search-input" style="max-width: 200px;" onchange="filterTable()">
+          <option value="">All Priority Levels</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </div>
+
+      <!-- History Table -->
+      <div class="table-box">
+        <table class="benchmark-table" id="historyTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Image</th>
+              <th>Predicted Class</th>
+              <th>Confidence</th>
+              <th>Quality</th>
+              <th>Monitoring Score</th>
+              <th>Priority</th>
+              <th>Date & Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if records %}
+              {% for rec in records %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>
+                  <img src="{{ rec.filepath }}" alt="Scan thumbnail" style="width: 45px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid var(--glass-border);">
+                </td>
+                <td><strong>{{ rec.predicted_class }}</strong></td>
+                <td><span style="color: var(--accent-cyan); font-weight: 700;">{{ rec.confidence }}%</span></td>
+                <td>
+                  <span style="font-size: 0.8rem; color: var(--text-muted);">{{ rec.image_quality }}</span>
+                </td>
+                <td><strong>{{ rec.risk_score }}/100</strong></td>
+                <td>
+                  <span class="prio-badge prio-{{ rec.priority }}">{{ rec.priority }}</span>
+                </td>
+                <td style="font-size: 0.8rem; color: var(--text-muted);">{{ rec.timestamp }}</td>
+                <td>
+                  <a href="/report/{{ rec.id }}" target="_blank" class="btn-nav" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;"><i class="fa-solid fa-file-pdf"></i> Report</a>
+                  <a href="/history/delete/{{ rec.id }}" onclick="return confirm('Delete inspection record #{{ rec.id }}?')" style="color: #ef4444; margin-left: 0.4rem; font-size: 0.85rem;"><i class="fa-solid fa-trash"></i></a>
+                </td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="9" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                  No prediction records found in the database yet. Go to the <a href="/dashboard" style="color: var(--accent-cyan);">Classification Portal</a> to upload an aerial scan!
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 1.2rem; font-size: 0.82rem; color: var(--text-muted); text-align: center; background: rgba(0, 242, 254, 0.04); padding: 0.7rem; border-radius: 8px; border: 1px solid var(--glass-border);">
+        <i class="fa-solid fa-circle-info" style="color: var(--accent-cyan);"></i> AI-assisted monitoring priority based on the predicted infrastructure class and predefined monitoring criteria. It does not indicate confirmed damage or physical risk.
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>AI-Driven Deep Learning for Aerial Infrastructure Classification &copy; 2026</p>
+  </footer>
+
+  <script>
+    function filterTable() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const prio = document.getElementById('prioFilter').value.toLowerCase();
+      const rows = document.querySelectorAll('#historyTable tbody tr');
+      let visibleIdx = 1;
+
+      rows.forEach(row => {
+        if (!row.children[0] || row.children.length < 5) return;
+        const text = row.innerText.toLowerCase();
+        const rowPrio = row.children[6] ? row.children[6].innerText.toLowerCase() : '';
+        
+        const matchesSearch = text.includes(search);
+        const matchesPrio = prio === '' || rowPrio.includes(prio);
+
+        if (matchesSearch && matchesPrio) {
+          row.style.display = '';
+          row.children[0].innerText = visibleIdx++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', filterTable);
+  </script>
+
+</body>
+</html>

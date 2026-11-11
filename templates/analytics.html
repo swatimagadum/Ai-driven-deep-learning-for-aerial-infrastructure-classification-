@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model Analytics & Evaluation Slides - AerialVision AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .slide-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .slide-tab {
+      padding: 0.8rem 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .slide-tab.active {
+      border-color: var(--accent-cyan);
+      background: rgba(0, 242, 254, 0.15);
+      color: var(--accent-cyan);
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
+    }
+    .slide-content {
+      display: none;
+      text-align: center;
+    }
+    .slide-content.active {
+      display: block;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .slide-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <i class="fa-solid fa-satellite"></i> AerialVision AI
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/dashboard">Classification Portal</a></li>
+      <li><a href="/analytics" class="active">Model Analytics</a></li>
+      <li><a href="/history">Inspection History</a></li>
+      {% if session.get('user') %}
+      <li><a href="/logout" style="color: var(--text-muted);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+      {% else %}
+      <li><a href="/login" class="btn-nav"><i class="fa-solid fa-user-shield"></i> Security Portal</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div style="text-align: center; margin: 2rem 0;">
+      <h1 style="font-size: 2.2rem; font-weight: 800; color: #fff;">
+        <i class="fa-solid fa-square-poll-vertical" style="color: var(--accent-cyan);"></i> Model Performance Analytics Slides
+      </h1>
+      <p style="color: var(--text-muted); margin-top: 0.5rem;">View evaluation charts one by one using interactive slide tabs or next/previous buttons.</p>
+    </div>
+
+    <!-- Slide Tabs -->
+    <div class="slide-tabs">
+      <div class="slide-tab active" onclick="showSlide(0, this)">
+        <i class="fa-solid fa-chart-column"></i> Slide 1: Model Comparison
+      </div>
+      <div class="slide-tab" onclick="showSlide(1, this)">
+        <i class="fa-solid fa-list-ol"></i> Slide 2: Class Recognition
+      </div>
+      <div class="slide-tab" onclick="showSlide(2, this)">
+        <i class="fa-solid fa-chart-line"></i> Slide 3: Training Curves
+      </div>
+    </div>
+
+    <!-- Slide Carousel Box -->
+    <div class="glass-card">
+
+      <!-- Slide 01: Model Comparison Bar Chart -->
+      <div class="slide-content active">
+        <h3 style="color: var(--accent-cyan); margin-bottom: 1rem;"><i class="fa-solid fa-chart-column"></i> Slide 1: Model Accuracy Comparison (Bar Chart)</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Side-by-side overall accuracy comparison between DenseNet121 (97.40%), VGG16 (94.20%), and MobileNetV2 (92.10%).</p>
+        <img src="{{ url_for('static', filename='model_comparison_bar.png') }}?v=7" alt="Bar Chart Model Comparison" style="max-width: 750px; width: 100%; border-radius: 12px; border: 1px solid var(--glass-border);">
+      </div>
+
+      <!-- Slide 02: Class Recognition Accuracy -->
+      <div class="slide-content">
+        <h3 style="color: var(--accent-emerald); margin-bottom: 1rem;"><i class="fa-solid fa-list-ol"></i> Slide 2: Model Accuracy by Infrastructure Class</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Model evaluation performance across all 10 infrastructure classes.</p>
+        <img src="{{ url_for('static', filename='class_identification_chart.png') }}?v=7" alt="Class Recognition Accuracy Chart" style="max-width: 750px; width: 100%; border-radius: 12px; border: 1px solid var(--glass-border);">
+      </div>
+
+      <!-- Slide 03: Training Performance Line Graphs -->
+      <div class="slide-content">
+        <h3 style="color: var(--accent-magenta); margin-bottom: 1rem;"><i class="fa-solid fa-chart-line"></i> Slide 3: Training Accuracy & Loss Reduction Curves</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Epoch progress curves displaying Accuracy rise (Cyan) and Loss reduction (Pink).</p>
+        <img src="{{ url_for('static', filename='accuracy_loss_line.png') }}?v=7" alt="Accuracy Loss Line Chart" style="max-width: 750px; width: 100%; border-radius: 12px; border: 1px solid var(--glass-border);">
+      </div>
+
+      <!-- Controls & Indicators -->
+      <div class="slide-controls">
+        <button class="btn-secondary" onclick="changeSlide(-1)"><i class="fa-solid fa-chevron-left"></i> Previous Slide</button>
+        <span id="slideIndicator" style="color: var(--text-muted); font-weight: 700;">Slide 1 of 3</span>
+        <button class="btn-primary" onclick="changeSlide(1)">Next Slide <i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+
+    </div>
+
+    <!-- Summary Table at Bottom -->
+    <div class="glass-card" style="margin-top: 2rem;">
+      <h3 style="color: var(--accent-cyan); margin-bottom: 1rem;"><i class="fa-solid fa-trophy"></i> Evaluation Benchmarks Table</h3>
+      <div class="table-box">
+        <table class="benchmark-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Model Architecture</th>
+              <th>Accuracy</th>
+              <th>Precision</th>
+              <th>Recall</th>
+              <th>F1-Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge-rank bg-cyan">#1 Best</span></td>
+              <td><strong>DenseNet121</strong></td>
+              <td style="color: var(--accent-cyan); font-weight:700;">97.40%</td>
+              <td>97.50%</td>
+              <td>97.30%</td>
+              <td>97.40%</td>
+            </tr>
+            <tr>
+              <td><span class="badge-rank bg-magenta">#2</span></td>
+              <td><strong>VGG16</strong></td>
+              <td style="color: var(--accent-magenta); font-weight:700;">94.20%</td>
+              <td>94.50%</td>
+              <td>94.00%</td>
+              <td>94.25%</td>
+            </tr>
+            <tr>
+              <td><span class="badge-rank bg-emerald">#3</span></td>
+              <td><strong>MobileNetV2</strong></td>
+              <td style="color: var(--accent-emerald); font-weight:700;">92.10%</td>
+              <td>92.30%</td>
+              <td>92.00%</td>
+              <td>92.15%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>AI-Driven Deep Learning for Aerial Infrastructure Classification &copy; 2026</p>
+  </footer>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide-content');
+    const tabs = document.querySelectorAll('.slide-tab');
+
+    function showSlide(index, tabEl) {
+      slides.forEach(s => s.classList.remove('active'));
+      tabs.forEach(t => t.classList.remove('active'));
+
+      currentSlide = index;
+      if (currentSlide >= slides.length) currentSlide = 0;
+      if (currentSlide < 0) currentSlide = slides.length - 1;
+
+      slides[currentSlide].classList.add('active');
+      tabs[currentSlide].classList.add('active');
+
+      document.getElementById('slideIndicator').innerText = `Slide ${currentSlide + 1} of ${slides.length}`;
+    }
+
+    function changeSlide(direction) {
+      showSlide(currentSlide + direction);
+    }
+  </script>
+
+</body>
+</html>

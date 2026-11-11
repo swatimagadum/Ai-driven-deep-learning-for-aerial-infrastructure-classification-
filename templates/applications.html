@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-World Applications - AerialVision AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    .app-card {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      transition: all 0.3s;
+    }
+    .app-card:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.15);
+      transform: translateY(-3px);
+    }
+    .app-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <i class="fa-solid fa-satellite"></i> AerialVision AI
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/dashboard">Classification Portal</a></li>
+      <li><a href="/history">Inspection History</a></li>
+      <li><a href="/analytics">Model Analytics</a></li>
+      <li><a href="/applications" class="active">Applications</a></li>
+      <li><a href="/docs">Docs</a></li>
+      <li><a href="/viva">Viva Q&A</a></li>
+      {% if session.get('user') %}
+      <li><span style="color: var(--accent-cyan); font-size: 0.88rem;"><i class="fa-solid fa-user-check"></i> {{ username }}</span></li>
+      <li><a href="/logout" style="color: var(--text-muted);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+      {% else %}
+      <li><a href="/login" class="btn-nav"><i class="fa-solid fa-shield-halved"></i> Security Portal</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div style="text-align: center; margin: 2rem 0;">
+      <h1 style="font-size: 2.2rem; font-weight: 800; color: #fff;">
+        <i class="fa-solid fa-earth-americas" style="color: var(--accent-cyan);"></i> Real-World Applications Module
+      </h1>
+      <p style="color: var(--text-muted); max-width: 800px; margin: 0.5rem auto;">
+        Discover how the AI-Driven Aerial Infrastructure Intelligence Platform acts as a decision-support system across 10 critical industrial, municipal, and defense domains.
+      </p>
+    </div>
+
+    <!-- Realistic System Positioning Alert -->
+    <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid var(--accent-cyan); border-radius: 12px; padding: 1.2rem; margin-bottom: 2rem; color: var(--text-muted); font-size: 0.9rem;">
+      <strong style="color: var(--accent-cyan);"><i class="fa-solid fa-circle-info"></i> Practical System Positioning Disclaimer:</strong><br>
+      This platform is engineered as an <strong>AI-assisted decision-support system</strong> to process high-resolution aerial/satellite imagery, automatically classify infrastructure, assign inspection priorities, and generate structured reports. It does <em>not</em> replace human domain engineers, defense commanders, or certified structural inspectors—it empowers them with rapid automated intelligence.
+    </div>
+
+    <!-- 10 Domain Applications Grid -->
+    <div class="app-grid">
+      <!-- 1. Infrastructure Inspection -->
+      <div class="app-card">
+        <div class="app-icon bg-cyan"><i class="fa-solid fa-bridge"></i></div>
+        <h3 style="color: #fff; margin-bottom: 0.5rem;">1. Civil Infrastructure Inspection</h3>
+        <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5;">
+          Automates the identification of bridges, expressways, and viaducts across massive geographical regions using drone surveys, prioritizing physical inspection queues.
+        </p>
+      </div>
+
+      <!-- 2. Transportation Monitoring -->
+      <div class="app-card">
+        <div class="app-icon bg-magenta"><i class="fa-solid fa-road"></i></div>
+        <h3 style="color: #fff; margin-bottom: 0.5rem;">2. Transportation Network Mapping</h3>
+        <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5;">
+          Monitors national highway corridors and major arterial road interchanges to support regional transit authority inventory management and expansion planning.
+        </p>
+      </div>
+
+      <!-- 3. Airport Monitoring -->
+      <div class="app-card">
+        <div class="app-icon bg-purple"><i class="fa-solid fa-plane-departure"></i></div>
+        <h3 style="color: #fff; margin-bottom: 0.5rem;">3. Commercial Airport Surveillance</h3>
+        <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5;">
+          Assists aviation authorities in mapping runway layouts, gate aprons, and perimeter boundaries, supporting safety audits and spatial asset tracking.
+        </p>
+      </div>
+
+      <!-- 4. Port Monitoring -->
+      <div class="app-card">
+        <div class="app-icon bg-indigo"><i class="fa-solid fa-anchor"></i></div>
+        <h3 style="color: #fff; margin-bottom: 0.5rem;">4. Maritime Port & Logistics</h3>
+        <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5;">
+          Monitors maritime container terminals, berth quays, and shipping logistics centers to evaluate maritime trade asset density and quay accessibility.
+        </p>
+      </div>
+
+      <!-- 5. Railway Management -->
+      <div class="app-card">
+        <div class="app-icon bg-rose"><i class="fa-solid fa-train"></i></div>
+        <h3 style="color: #fff; margin-bottom: 0.5rem;">5. Railway Asset Management</h3>
+        <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5;">
+          Identifies multi-track rail corridors, marshalling yards, and station platforms across vast inter-city rail networks for maintenance scheduling.
+        </p>
+      </div>
+
+      <!-- 6. Defense Surveillance -->
+      <div class="app-card">
+        <div class="app-icon bg-emerald"><i class="fa-solid fa-shield-cat"></i></div>
+        <h3 style="color: #fff; margin-bottom: 0.5rem;">6. Defense & Perimeter Security</h3>
+        <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5;">
+          Assists defense intelligence analysts in identifying strategic airforce bases, army compounds, and naval facilities for territorial security mapping.
+        </p>
+      </div>
+
+      <!-- 7. Energy Infrastructure -->
+      <div class="app-card">
+        <div class="app-icon bg-teal"><i class="fa-solid fa-oil-well"></i></div>
+        <h3 style="color: #fff; margin-bottom: 0.5rem;">7. Petroleum & Energy Reserves</h3>
+        <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5;">
+          Maps petroleum reservoir tank farms, refinery complexes, and pipeline manifolds to maintain environmental hazard awareness and safety compliance.
+        </p>
+      </div>
+
+      <!-- 8. Urban Planning -->
+      <div class="app-card">
+        <div class="app-icon bg-amber"><i class="fa-solid fa-city"></i></div>
+        <h3 style="color: #fff; margin-bottom: 0.5rem;">8. Urban Planning & Capital Governance</h3>
+        <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5;">
+          Tracks urban growth density, capital city municipal building footprints, and civic infrastructure development using periodic satellite feeds.
+        </p>
+      </div>
+
+      <!-- 9. Disaster Assessment Support -->
+      <div class="app-card">
+        <div class="app-icon bg-pink"><i class="fa-solid fa-house-tsunami"></i></div>
+        <h3 style="color: #fff; margin-bottom: 0.5rem;">9. Post-Disaster Response Support</h3>
+        <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5;">
+          Rapidly scans post-earthquake or flood aerial photos to identify surviving infrastructure assets (bridges, highways) for emergency rescue logistics.
+        </p>
+      </div>
+
+      <!-- 10. Satellite & Drone Analytics -->
+      <div class="app-card">
+        <div class="app-icon bg-blue"><i class="fa-solid fa-satellite-dish"></i></div>
+        <h3 style="color: #fff; margin-bottom: 0.5rem;">10. Autonomous Drone & Satellite Telemetry</h3>
+        <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5;">
+          Serves as an automated image-processing backend for unmanned aerial vehicles (UAVs) and Earth Observation satellites conducting automated terrain classification.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>AI-Driven Deep Learning for Aerial Infrastructure Classification &copy; 2026</p>
+  </footer>
+
+</body>
+</html>

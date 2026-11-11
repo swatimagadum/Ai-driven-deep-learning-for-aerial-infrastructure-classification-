@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Classification & Infrastructure Intelligence Portal - AerialVision AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .preprocess-badge {
+      background: rgba(0, 242, 254, 0.08);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      border-radius: 10px;
+      padding: 0.8rem;
+      margin-top: 1rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-align: left;
+    }
+    .preprocess-step {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--glass-border);
+      border-radius: 6px;
+      margin-top: 0.3rem;
+      font-weight: 600;
+      color: var(--accent-cyan);
+    }
+    .insight-box {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+    .prio-badge {
+      padding: 0.3rem 0.8rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .prio-Critical { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; }
+    .prio-High { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid #f59e0b; }
+    .prio-Medium { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid #3b82f6; }
+    .prio-Low { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981; }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <i class="fa-solid fa-satellite"></i> AerialVision AI
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/dashboard" class="active">Classification Portal</a></li>
+      <li><a href="/analytics">Model Analytics</a></li>
+      <li><a href="/history">Inspection History</a></li>
+      {% if session.get('user') %}
+      <li><a href="/logout" style="color: var(--text-muted);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+      {% else %}
+      <li><a href="/login" class="btn-nav"><i class="fa-solid fa-shield-halved"></i> Login</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="grid-layout">
+
+      <!-- Left Column: Upload Aerial Image -->
+      <div class="glass-card">
+        <div class="card-title">
+          <i class="fa-solid fa-cloud-arrow-up" style="color: var(--accent-cyan);"></i> Upload Aerial Image
+        </div>
+
+        <form id="uploadForm">
+          <div class="upload-zone" id="dropZone" onclick="document.getElementById('imageInput').click()">
+            <div class="upload-icon">
+              <i class="fa-solid fa-image" style="font-size: 2.8rem; color: var(--accent-cyan); margin-bottom: 1rem;"></i>
+            </div>
+            <p><strong>Click to browse</strong> or drag & drop image here</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem;">Supports JPG, PNG, WEBP (Max 16MB)</p>
+            <input type="file" id="imageInput" class="file-input" accept="image/*" onchange="previewFile(this)">
+          </div>
+
+          <div class="preview-box" id="previewContainer">
+            <img id="imagePreview" src="" alt="Aerial Image Preview">
+            
+            <!-- Preprocessing Applied Status Badge -->
+            <div class="preprocess-badge">
+              <i class="fa-solid fa-sliders" style="color: var(--accent-cyan);"></i> <strong>Preprocessing Pipeline:</strong><br>
+              <span class="preprocess-step"><i class="fa-solid fa-expand"></i> Resized to 224×224</span>
+              <span class="preprocess-step"><i class="fa-solid fa-palette"></i> RGB Format</span>
+              <span class="preprocess-step"><i class="fa-solid fa-calculator"></i> Pixel Normalized [0.0, 1.0]</span>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit" id="submitBtn" style="margin-top: 1.2rem;">
+            <i class="fa-solid fa-bolt"></i> CLASSIFY
+          </button>
+        </form>
+
+        <div class="spinner" id="loadingSpinner"></div>
+      </div>
+
+      <!-- Right Column: Classification Result -->
+      <div class="glass-card">
+        <div class="card-title">
+          <i class="fa-solid fa-chart-pie" style="color: var(--accent-magenta);"></i> Classification & Infrastructure Intelligence
+        </div>
+
+        <div id="resultPlaceholder" style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+          <i class="fa-solid fa-layer-group" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; color: var(--accent-cyan);"></i>
+          <p>Upload an aerial image and click <strong>CLASSIFY</strong> to view predictions.</p>
+        </div>
+
+        <div id="resultContent" style="display: none;">
+          <!-- Primary Prediction Badge -->
+          <div class="result-badge">
+            <div class="result-label">PREDICTED CLASS</div>
+            <div class="result-value" id="resPredictedClass">-</div>
+          </div>
+
+          <!-- Confidence Breakdown -->
+          <div style="margin-bottom: 1.2rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+              <span>Confidence</span>
+              <strong id="resConfidenceText" style="color: var(--accent-cyan);">0%</strong>
+            </div>
+            <div class="confidence-bar-bg">
+              <div class="confidence-bar-fill" id="resConfidenceBar"></div>
+            </div>
+            <div id="resConfidenceLabel" style="font-size: 0.8rem; color: var(--accent-emerald); margin-top: 0.3rem; font-weight: 600;">-</div>
+          </div>
+
+          <!-- Top Predictions Ranking -->
+          <div style="margin-top: 1rem;">
+            <h4 style="font-size: 0.9rem; margin-bottom: 0.6rem; color: var(--text-muted);"><i class="fa-solid fa-list-ol"></i> Top Predictions</h4>
+            <div id="topPredictionsList"></div>
+          </div>
+
+          <!-- AI-Assisted Monitoring Priority Card -->
+          <div style="background: rgba(13, 19, 35, 0.9); border: 1px solid var(--glass-border); padding: 1rem; border-radius: 10px; margin-top: 1.2rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">AI-Assisted Monitoring Priority</div>
+              <div id="resPriorityText" style="font-size: 1.1rem; font-weight: 800; color: #fff; margin-top: 0.2rem;">Priority Level</div>
+            </div>
+            <div>
+              <span id="resPriorityBadge" class="prio-badge prio-Medium">Medium Priority</span>
+            </div>
+          </div>
+
+          <!-- Printable PDF Report Link -->
+          <div style="margin-top: 1.2rem; text-align: center;">
+            <a id="resReportBtn" href="#" target="_blank" class="btn-primary" style="display: inline-block; padding: 0.6rem 1.2rem; font-size: 0.88rem;">
+              <i class="fa-solid fa-file-pdf"></i> Download Inspection PDF Report
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Explainability Section -->
+    <div id="explainabilitySection" class="glass-card" style="margin-top: 2rem; display: none;">
+      <div class="card-title">
+        <i class="fa-solid fa-eye" style="color: var(--accent-cyan);"></i> AI Explainability
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem;">
+        <div style="text-align: center;">
+          <h4 style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">Original Image</h4>
+          <img id="expOrigImg" src="" alt="Original Image" style="width: 100%; height: 260px; object-fit: cover; border-radius: 8px; border: 1px solid var(--glass-border);">
+        </div>
+        <div style="text-align: center;">
+          <h4 style="font-size: 0.9rem; color: var(--accent-cyan); margin-bottom: 0.5rem;">Attention Heatmap</h4>
+          <img id="expHeatmapImg" src="" alt="Attention Heatmap" style="width: 100%; height: 260px; object-fit: cover; border-radius: 8px; border: 1px solid var(--accent-cyan);">
+        </div>
+      </div>
+
+      <div style="margin-top: 1rem; background: rgba(0, 242, 254, 0.05); padding: 0.8rem; border-radius: 8px; font-size: 0.88rem; color: var(--text-muted); text-align: center;">
+        <i class="fa-solid fa-lightbulb" style="color: var(--accent-cyan);"></i> "The heatmap highlights regions that contributed to the model's classification."
+      </div>
+    </div>
+
+    <!-- Infrastructure Insight Section -->
+    <div id="insightSection" class="glass-card" style="margin-top: 2rem; display: none;">
+      <div class="card-title">
+        <i class="fa-solid fa-brain" style="color: var(--accent-magenta);"></i> Infrastructure Insight
+      </div>
+
+      <div class="insight-box">
+        <h3 id="insClassName" style="font-size: 1.3rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;">-</h3>
+        <p id="insWhatIsIt" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.2rem;">-</p>
+
+        <div style="display: flex; align-items: center; gap: 0.8rem; background: rgba(0,0,0,0.3); padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid var(--glass-border);">
+          <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 600;">Monitoring Priority:</span>
+          <span id="insPrioBadge" class="prio-badge prio-High">High</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Supported Infrastructure Classes (10 Categories) -->
+    <div class="glass-card" style="margin-top: 2rem;">
+      <div class="card-title">
+        <i class="fa-solid fa-list-check" style="color: var(--accent-emerald);"></i> Supported Infrastructure Classes (10 Categories)
+      </div>
+
+      <div class="category-grid">
+        <div class="cat-card"><div class="cat-icon bg-cyan"><i class="fa-solid fa-jet-fighter"></i></div><div class="cat-name">Airforce Base</div></div>
+        <div class="cat-card"><div class="cat-icon bg-magenta"><i class="fa-solid fa-person-military-pointing"></i></div><div class="cat-name">Army Base</div></div>
+        <div class="cat-card"><div class="cat-icon bg-emerald"><i class="fa-solid fa-bridge"></i></div><div class="cat-name">Bridge</div></div>
+        <div class="cat-card"><div class="cat-icon bg-amber"><i class="fa-solid fa-city"></i></div><div class="cat-name">Capital City</div></div>
+        <div class="cat-card"><div class="cat-icon bg-purple"><i class="fa-solid fa-plane-departure"></i></div><div class="cat-name">Commercial Airport</div></div>
+        <div class="cat-card"><div class="cat-icon bg-pink"><i class="fa-solid fa-road"></i></div><div class="cat-name">National Highway</div></div>
+        <div class="cat-card"><div class="cat-icon bg-blue"><i class="fa-solid fa-ship"></i></div><div class="cat-name">Navy Base</div></div>
+        <div class="cat-card"><div class="cat-icon bg-teal"><i class="fa-solid fa-oil-well"></i></div><div class="cat-name">Oil Reservoir Tank</div></div>
+        <div class="cat-card"><div class="cat-icon bg-indigo"><i class="fa-solid fa-anchor"></i></div><div class="cat-name">Port</div></div>
+        <div class="cat-card"><div class="cat-icon bg-rose"><i class="fa-solid fa-train"></i></div><div class="cat-name">Railway Station</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>AI-Driven Deep Learning for Aerial Infrastructure Classification &copy; 2026</p>
+  </footer>
+
+  <script>
+    function previewFile(input) {
+      const file = input.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('imagePreview').src = e.target.result;
+          document.getElementById('previewContainer').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    const dropZone = document.getElementById('dropZone');
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      }, false);
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+      }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files.length > 0) {
+        document.getElementById('imageInput').files = files;
+        previewFile(document.getElementById('imageInput'));
+      }
+    });
+
+    document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const fileInput = document.getElementById('imageInput');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Please select an aerial image file first.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+      formData.append('location', '');
+      formData.append('latitude', '');
+      formData.append('longitude', '');
+
+      document.getElementById('loadingSpinner').style.display = 'block';
+      document.getElementById('submitBtn').disabled = true;
+
+      try {
+        const response = await fetch('/predict', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+        document.getElementById('loadingSpinner').style.display = 'none';
+        document.getElementById('submitBtn').disabled = false;
+
+        if (data.success) {
+          document.getElementById('resultPlaceholder').style.display = 'none';
+          document.getElementById('resultContent').style.display = 'block';
+
+          // Prediction & Confidence
+          document.getElementById('resPredictedClass').innerText = data.predicted_class;
+          document.getElementById('resConfidenceText').innerText = data.confidence + '%';
+          document.getElementById('resConfidenceBar').style.width = data.confidence + '%';
+          document.getElementById('resConfidenceLabel').innerText = data.confidence_label + ' — ' + data.confidence_explanation;
+
+          // Top 3 Predictions
+          const topList = document.getElementById('topPredictionsList');
+          topList.innerHTML = '';
+          data.top_predictions.forEach((item, idx) => {
+            topList.innerHTML += `
+              <div style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem;">
+                <span>#${idx+1} ${item.class}</span>
+                <strong style="color: var(--accent-cyan);">${item.confidence}%</strong>
+              </div>
+            `;
+          });
+
+          // AI-Assisted Monitoring Priority
+          const prioBadge = document.getElementById('resPriorityBadge');
+          prioBadge.className = 'prio-badge prio-' + data.priority;
+          prioBadge.innerText = data.priority + ' Priority';
+
+          // PDF Report Link
+          document.getElementById('resReportBtn').href = '/report/' + data.record_id;
+
+          // Explainability Heatmap
+          document.getElementById('explainabilitySection').style.display = 'block';
+          document.getElementById('expOrigImg').src = data.image_url;
+          document.getElementById('expHeatmapImg').src = data.heatmap_path;
+
+          // Infrastructure Insight Card
+          document.getElementById('insightSection').style.display = 'block';
+          document.getElementById('insClassName').innerText = data.predicted_class;
+          document.getElementById('insWhatIsIt').innerText = data.intelligence.description;
+
+          const insBadge = document.getElementById('insPrioBadge');
+          if (insBadge) {
+            insBadge.className = 'prio-badge prio-' + data.priority;
+            insBadge.innerText = data.priority;
+          }
+
+        } else {
+          alert(data.error || 'Prediction failed.');
+        }
+      } catch (err) {
+        document.getElementById('loadingSpinner').style.display = 'none';
+        document.getElementById('submitBtn').disabled = false;
+        alert('Error processing image: ' + err.message);
+      }
+    });
+  </script>
+
+</body>
+</html>

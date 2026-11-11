@@ -1,0 +1,36 @@
+{
+  "best_architecture": "DenseNet121",
+  "classes": [
+    "Airforce Base",
+    "Army Base",
+    "Bridge",
+    "Capital City",
+    "Commercial Airport",
+    "National Highway",
+    "Navy Base",
+    "Oil Reservoir Tank",
+    "Port",
+    "Railway Station"
+  ],
+  "metrics": {
+    "MobileNetV2": {
+      "Accuracy": 0.8926,
+      "Precision": 0.8839,
+      "Recall": 0.8968,
+      "F1-Score": 0.8903
+    },
+    "VGG16": {
+      "Accuracy": 0.9253,
+      "Precision": 0.9347,
+      "Recall": 0.9193,
+      "F1-Score": 0.927
+    },
+    "DenseNet121": {
+      "Accuracy": 0.9574,
+      "Precision": 0.9743,
+      "Recall": 0.9474,
+      "F1-Score": 0.9607
+    }
+  },
+  "status": "trained"
+}
